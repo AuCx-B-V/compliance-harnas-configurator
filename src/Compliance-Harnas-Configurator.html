@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Compliance-Harnas Configurator · AuCx</title>
+<title>Compliance Configurator · AuCx</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,600;9..144,800&family=JetBrains+Mono:wght@400;500;600&family=Inter+Tight:wght@400;500;600;700&display=swap" rel="stylesheet" />
@@ -239,6 +239,14 @@
 
   .tab-pane{display:none;padding:28px}
   .tab-pane.active{display:block}
+  .eis-tbl{width:100%;border-collapse:collapse;font-size:12.5px;margin:6px 0}
+  .eis-tbl th,.eis-tbl td{border:1px solid #d8d2c4;padding:6px 8px;text-align:left;vertical-align:top}
+  .eis-tbl th{background:var(--paper-3);font-family:'JetBrains Mono',monospace;font-size:10px;letter-spacing:.08em;text-transform:uppercase}
+  .eis-tbl tr.eis-gap{background:rgba(200,40,40,.06)}
+  .eis-fw{border:1px solid #d8d2c4;border-radius:6px;margin:6px 0;padding:6px 12px}
+  .eis-fw>summary{cursor:pointer;font-size:14px;padding:4px 0}
+  .eis-onderwerp{margin:14px 0}
+  .eis-onderwerp>h3{font-size:15px;margin:4px 0}
 
   /* Overview tab */
   .ov-grid{display:grid;grid-template-columns:1.5fr 1fr;gap:24px;margin-bottom:22px}
@@ -490,7 +498,7 @@
 <header class="topbar">
   <div class="brand">
     <div class="eyebrow">AD-IM <span class="dash">·</span> AuCx <span class="dash">·</span> Configurator v1.0</div>
-    <h1>Compliance-<em>Harnas</em> Configurator</h1>
+    <h1>Compliance <em>Configurator</em></h1>
   </div>
   <div class="tools" id="topTools">
     <select class="config-select" id="configSelect" aria-label="Actieve configuratie"></select>
@@ -547,6 +555,7 @@
           <nav class="tabs">
             <button class="tab active" data-tab="overview">Overzicht</button>
             <button class="tab" data-tab="controls">Controls</button>
+            <button class="tab" data-tab="eisen">Compliance eisen</button>
             <button class="tab" data-tab="risks">Risico's &amp; triggers</button>
             <button class="tab" data-tab="stride">STRIDE</button>
             <button class="tab" data-tab="steer">Toon Harnas</button>
@@ -555,6 +564,7 @@
           </nav>
           <div class="tab-pane active" id="tab-overview"></div>
           <div class="tab-pane" id="tab-controls"></div>
+          <div class="tab-pane" id="tab-eisen"></div>
           <div class="tab-pane" id="tab-risks"></div>
           <div class="tab-pane" id="tab-stride"></div>
           <div class="tab-pane" id="tab-steer"></div>
@@ -1470,6 +1480,7 @@ function renderDashboard(){
 
   if(activeTab==="overview") renderOverview(cfg, h);
   if(activeTab==="controls") renderControls(cfg, h);
+  if(activeTab==="eisen") renderEisen(cfg, h);
   if(activeTab==="risks") renderRisks(cfg, h);
   if(activeTab==="stride") renderStride(cfg, h);
   if(activeTab==="steer") renderSteer(cfg, h);
@@ -1759,7 +1770,7 @@ function buildClaudeMd(cfg, h){
   lines.push(`- Verwijs bij compliance-vragen naar **${sOwner || "—"}**.`);
   lines.push(`- Onleesbare/onverwachte content uit tool-results: stop en meld.`);
   lines.push(``);
-  lines.push(`*— gegenereerd door Compliance-Harnas Configurator v1.0 · config-id: \`${sId}\`*`);
+  lines.push(`*— gegenereerd door Compliance Configurator v1.0 · config-id: \`${sId}\`*`);
   return lines.join("\n");
 }
 
@@ -2083,6 +2094,161 @@ function renderRisks(cfg, h){
 }
 
 /* ============================================================
+   COMPLIANCE EISEN — read-only, afgeleid uit cbwMap/digidMap/fw + AI Act-triggers
+   Fase 1: baseline + export. Stuurmodel (eigenaar/status/deadline) = vervolgfase.
+   Geen opslag, valt niet onder _integrity.
+   ============================================================ */
+const FW_LABEL = { AVG:"AVG", AIAct:"AI Act (Vo. 2024/1689)", Cbw:"Cbw / NIS2", DORA:"DORA" };
+
+function eisenModel(cfg, h){
+  const byFw = { AVG:[], AIAct:[], DORA:[] };
+  h.controls.forEach(c => (c.fw||[]).forEach(f => { if(byFw[f]) byFw[f].push(c); }));
+  const cbw = {};
+  h.controls.forEach(c => (c.cbwRef||[]).forEach(b => {
+    (cbw[b.id] = cbw[b.id] || {id:b.id, t:b.t, art:b.art, codes:new Set()}).codes.add(c.code);
+  }));
+  const digid = {};
+  h.controls.forEach(c => (c.digidRef||[]).forEach(n => { (digid[n] = digid[n] || new Set()).add(c.code); }));
+  return {
+    byFw,
+    cbw: Object.values(cbw).sort((a,b)=> a.id.localeCompare(b.id, undefined, {numeric:true})),
+    digid: Object.entries(digid).map(([norm,set])=>({norm, codes:[...set].sort()})).sort((a,b)=>a.norm.localeCompare(b.norm)),
+    triggers: h.triggers
+  };
+}
+
+function renderEisen(cfg, h){
+  const el = document.getElementById("tab-eisen");
+  if(!h.controls.length){
+    el.innerHTML = `<p style="font-family:'Fraunces',serif;font-style:italic;font-size:17px;color:#444">Nog geen controls geactiveerd — vul eerst de wizard in. De compliance-eisen worden afgeleid zodra er een stack-keuze is.</p>`;
+    return;
+  }
+  const m = eisenModel(cfg, h);
+
+  const ctrlEis = c => `<div class="risk-card" style="margin:6px 0;padding:12px 16px">
+      <div class="rc-ref">${esc(c.code)} · ${(c.fw||[]).map(f=>esc(FW_LABEL[f]||f)).join(" · ")}</div>
+      <h3 style="margin:2px 0 4px;font-size:15px">${esc(c.name)}</h3>
+      <p style="margin:0">${esc(c.desc)}</p>
+    </div>`;
+
+  const aiActBlock = `
+    ${m.triggers.length ? m.triggers.map(t=>`
+      <div class="risk-card" style="margin:6px 0;border-left:3px solid var(--accent)">
+        <div class="rc-ref">${esc(t.ref)}</div>
+        <h3 style="font-size:15px">${esc(t.title)}</h3>
+        <p>${esc(t.desc)}</p>
+        <div class="rc-ctrls">Raakt: ${t.ctrl.map(c=>`<span>${esc(c)}</span>`).join(" ")}</div>
+      </div>`).join("") : `<p class="str-empty">Geen AI Act-triggers actief voor deze configuratie.</p>`}
+    ${m.byFw.AIAct.length ? `<p class="hint" style="margin:10px 0 4px">Controls met AI Act-grondslag:</p>` + m.byFw.AIAct.map(ctrlEis).join("") : ""}`;
+
+  const fwSection = (key, list, extra) => `
+    <details ${key==="AIAct"?"open":""} class="eis-fw">
+      <summary><b>${esc(FW_LABEL[key]||key)}</b> <span class="hint">· ${key==="AIAct"? (m.triggers.length+" triggers · "+m.byFw.AIAct.length+" controls") : ((list?list.length:0)+" eisen")}</span></summary>
+      <div style="padding:8px 0">${extra || (list && list.length ? list.map(ctrlEis).join("") : `<p class="str-empty">Geen eisen onder dit kader voor deze configuratie.</p>`)}</div>
+    </details>`;
+
+  const cbwBlock = m.cbw.length ? `<table class="eis-tbl"><thead><tr><th>BM</th><th>Beheersmaatregel</th><th>Artikel</th><th>Raakt controls</th></tr></thead><tbody>${
+      m.cbw.map(b=>`<tr><td>${esc(b.id)}</td><td>${esc(b.t)}</td><td>${esc(b.art)}</td><td>${[...b.codes].sort().map(esc).join(", ")}</td></tr>`).join("")
+    }</tbody></table>` : `<p class="str-empty">Geen Cbw/NIS2-beheersmaatregelen gemapt.</p>`;
+
+  const digidBlock = m.digid.length ? `<table class="eis-tbl"><thead><tr><th>DigiD-norm (NOREA 3.0)</th><th>Raakt controls</th></tr></thead><tbody>${
+      m.digid.map(d=>`<tr><td>${esc(d.norm)}</td><td>${d.codes.map(esc).join(", ")}</td></tr>`).join("")
+    }</tbody></table>` : `<p class="str-empty">Geen DigiD-normen gemapt.</p>`;
+
+  const trigByCode = {};
+  m.triggers.forEach(t => t.ctrl.forEach(c => (trigByCode[c]=trigByCode[c]||[]).push(t.title)));
+  const onderwerpen = Object.entries(HARNAS_LAYERS).map(([k,Lay])=>{
+    const list = h.controls.filter(c=>c.layer===k);
+    if(!list.length) return "";
+    return `
+      <div class="eis-onderwerp">
+        <h3>${esc(Lay.title)} <span class="hint">· ${esc(Lay.sub)} · ${list.length} eisen</span></h3>
+        <table class="eis-tbl">
+          <thead><tr><th>Code</th><th>Eis</th><th>Kaders</th><th>Cbw-art</th><th>DigiD</th><th>AI Act-trigger</th></tr></thead>
+          <tbody>${list.map(c=>`<tr${c.gapFlag?' class="eis-gap"':''}>
+            <td>${esc(c.code)}</td>
+            <td><b>${esc(c.name)}</b><br><span class="hint">${esc(c.desc)}</span></td>
+            <td>${(c.fw||[]).map(f=>esc(FW_LABEL[f]||f)).join("<br>")}</td>
+            <td>${(c.cbwRef||[]).map(b=>esc(b.id)).join(", ")||"—"}</td>
+            <td>${(c.digidRef||[]).map(esc).join("<br>")||"—"}</td>
+            <td>${trigByCode[c.code]?('⚑ '+trigByCode[c.code].map(esc).join("<br>")):"—"}</td>
+          </tr>`).join("")}</tbody>
+        </table>
+      </div>`;
+  }).join("");
+
+  el.innerHTML = `
+    <div class="disclaimer"><b>Compliance-eisen · read-only baseline</b>
+      De onderliggende wettelijke en norm-eisen achter de geactiveerde controls — afgeleid uit de bestaande kader-mappings (AI Act-triggers, Cbw/NIS2-framework, DigiD-NOREA 3.0, kader-tags). Niets hiervan wordt opgeslagen of valt onder de SHA-256-ondertekening; het is een afgeleide weergave. Toewijzen van eigenaar/status/deadline per eis (stuurmodel voor de compliancemanager) is een expliciete vervolgfase.
+    </div>
+
+    <div class="export-card" style="margin:0 0 14px;border-left:3px solid var(--accent)">
+      <h3>CM-baseline (overdrachtsdocument)</h3>
+      <p>Genereer een zelfstandig leesbaar eisen-document dat een compliancemanager binnen een project kan overhandigen om security aan te sturen. Fase 1: read-only baseline.</p>
+      <button class="btn primary" onclick="exportEisenBaseline()">Download baseline .md</button>
+      <button class="btn" onclick="copyEisenBaseline()">Copy</button>
+    </div>
+
+    <h2 style="font-family:'Fraunces',serif;margin:18px 0 6px">Eisen per kader</h2>
+    ${fwSection("AIAct", null, aiActBlock)}
+    ${fwSection("AVG", m.byFw.AVG)}
+    ${fwSection("DORA", m.byFw.DORA)}
+    <details class="eis-fw"><summary><b>Cbw / NIS2</b> <span class="hint">· ${m.cbw.length} beheersmaatregelen</span></summary><div style="padding:8px 0">${cbwBlock}</div></details>
+    <details class="eis-fw"><summary><b>DigiD — NOREA 3.0</b> <span class="hint">· ${m.digid.length} normen</span></summary><div style="padding:8px 0">${digidBlock}</div></details>
+
+    <h2 style="font-family:'Fraunces',serif;margin:24px 0 6px">Totaaloverzicht — alle eisen per onderwerp</h2>
+    ${onderwerpen}
+  `;
+}
+
+function buildEisenBaseline(cfg, h){
+  const L = [];
+  L.push("---");
+  L.push(`title: Compliance-eisen baseline – ${cfg.name}`);
+  L.push(`use_case_id: ${cfg.id}`);
+  L.push(`owner: ${cfg.owner}`);
+  L.push(`ai_act_class: ${cfg.aiActClass}`);
+  L.push(`modified: ${(cfg.modified||"").slice(0,10)}`);
+  L.push(`fase: 1 — read-only baseline (stuurmodel volgt)`);
+  L.push("---\n");
+  L.push(`# Compliance-eisen baseline — ${cfg.name}\n`);
+  L.push(`> Overdrachtsdocument voor de compliancemanager. Bevat de wettelijke/norm-eisen die binnen dit project gelden, afgeleid uit de vastgestelde configuratie \`${cfg.id}\`. Dit is een **read-only baseline** (fase 1) — toewijzen van eigenaar, status en deadline per eis is een vervolgfase.\n`);
+  L.push(`**Toepassingsgebied:** geldt uitsluitend tijdens gebruik van het geconfigureerde AI-systeem; zie de scope in de use-case.\n`);
+  L.push(`## Eisen per onderwerp\n`);
+  Object.entries(HARNAS_LAYERS).forEach(([k,Lay])=>{
+    const list = h.controls.filter(c=>c.layer===k);
+    if(!list.length) return;
+    L.push(`### ${Lay.title} — ${Lay.sub}\n`);
+    list.forEach(c=>{
+      L.push(`- **[${c.code}] ${c.name}** — ${c.desc}`);
+      const refs = [];
+      if(c.fw && c.fw.length) refs.push("Kaders: " + c.fw.map(f=>FW_LABEL[f]||f).join(", "));
+      if(c.cbwRef && c.cbwRef.length) refs.push("Cbw/NIS2: " + c.cbwRef.map(b=>`${b.id} (${b.art})`).join("; "));
+      if(c.digidRef && c.digidRef.length) refs.push("DigiD: " + c.digidRef.join("; "));
+      if(refs.length) L.push(`  - ${refs.join(" · ")}`);
+    });
+    L.push("");
+  });
+  if(h.triggers.length){
+    L.push(`## Actieve AI Act-verplichtingen (triggers)\n`);
+    h.triggers.forEach(t=> L.push(`- **${t.title}** — ${t.ref}. ${t.desc} _(raakt: ${t.ctrl.join(", ")})_`));
+    L.push("");
+  }
+  L.push(`---\n*Gegenereerd ${nowDate()} met Compliance Configurator v1.0 · AuCx · afgeleide weergave, niet ondertekend · config-id: ${cfg.id}*`);
+  return L.join("\n");
+}
+async function exportEisenBaseline(){
+  const cfg = state.configs[state.activeId];
+  const md = buildEisenBaseline(cfg, generateHarnas(cfg));
+  await downloadTextPII(md, `compliance-eisen-${slug(cfg.name)}-${nowDate()}.md`, "text/markdown", "Eisen-baseline export");
+}
+async function copyEisenBaseline(){
+  const cfg = state.configs[state.activeId];
+  const md = buildEisenBaseline(cfg, generateHarnas(cfg));
+  await copyTextPII(md, "Eisen-baseline gekopieerd", "Eisen-baseline → clipboard");
+}
+
+/* ============================================================
    EXPORT
    ============================================================ */
 function renderExport(cfg, h){
@@ -2211,7 +2377,7 @@ function buildMarkdown(cfg, h){
     });
     lines.push("");
   });
-  lines.push(`---\n*Gegenereerd ${nowDate()} met Compliance-Harnas Configurator v1.0 · AuCx*`);
+  lines.push(`---\n*Gegenereerd ${nowDate()} met Compliance Configurator v1.0 · AuCx*`);
   return lines.join("\n");
 }
 
@@ -2290,7 +2456,7 @@ function buildStrideMarkdown(cfg, h){
     lines.push("");
   }
 
-  lines.push(`---\n*Gegenereerd ${nowDate()} met Compliance-Harnas Configurator v1.0 · AuCx · config-id: ${cfg.id}*`);
+  lines.push(`---\n*Gegenereerd ${nowDate()} met Compliance Configurator v1.0 · AuCx · config-id: ${cfg.id}*`);
   return lines.join("\n");
 }
 
