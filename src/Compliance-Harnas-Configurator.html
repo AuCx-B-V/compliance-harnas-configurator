@@ -1144,6 +1144,12 @@ function slug(s){ return (s||"config").toLowerCase().replace(/[^a-z0-9]+/g,"-").
 /* ============================================================
    ENGINE — generateHarnas(config) → {controls, triggers, risk}
    ============================================================ */
+function l05Label(cfg){
+  if(cfg.L05?.agent===true && cfg.L05.level) return aucx.L05.invul.find(x=>x.id===cfg.L05.level)?.name || cfg.L05.level;
+  if(cfg.L04?.agents===true) return "agents · niveau ontbreekt";
+  return "geen agent";
+}
+
 function generateHarnas(cfg){
   const triggeredBy = {}; // code → Set of reasons
   function add(codes, reason){
@@ -1976,7 +1982,7 @@ function renderOverview(cfg, h){
     "Data (L03)": aucx.L03.invul.find(x=>x.id===cfg.L03.scope)?.name + " · " + aucx.L03.pgInvul.find(x=>x.id===cfg.L03.pg)?.name,
     "Model (L02)": aucx.L02.invul.find(x=>x.id===cfg.L02.model)?.name + " · " + aucx.L02.ftInvul.find(x=>x.id===cfg.L02.finetune)?.name,
     "Infra (L01)": aucx.L01.invul.find(x=>x.id===cfg.L01.infra)?.name,
-    "Agents/tools": cfg.L04.agents ? "ja" : "nee",
+    "Autonomie (L05)": l05Label(cfg),
     "Vertrouwelijk": cfg.L03.confidential ? "ja" : "nee",
     "AI Act klasse": cfg.aiActClass,
     "Carrier": h.carrier
@@ -2369,10 +2375,11 @@ function buildMarkdown(cfg, h){
   lines.push(`> ${cfg.purpose}\n`);
   lines.push(`## Configuratie\n`);
   lines.push(`| Laag | Keuze |\n|---|---|`);
-  lines.push(`| L04 Applicatie | ${aucx.L04.invul.find(x=>x.id===cfg.L04.app)?.name} · ${aucx.L04.promptInvul.find(x=>x.id===cfg.L04.prompts)?.name}${cfg.L04.agents?" · agents":""} |`);
+  lines.push(`| L04 Applicatie | ${aucx.L04.invul.find(x=>x.id===cfg.L04.app)?.name} · ${aucx.L04.promptInvul.find(x=>x.id===cfg.L04.prompts)?.name} |`);
   lines.push(`| L03 Data | ${aucx.L03.invul.find(x=>x.id===cfg.L03.scope)?.name} · ${aucx.L03.pgInvul.find(x=>x.id===cfg.L03.pg)?.name}${cfg.L03.confidential?" · vertrouwelijk":""} |`);
   lines.push(`| L02 Model | ${aucx.L02.invul.find(x=>x.id===cfg.L02.model)?.name} · ${aucx.L02.ftInvul.find(x=>x.id===cfg.L02.finetune)?.name} |`);
   lines.push(`| L01 Infra | ${aucx.L01.invul.find(x=>x.id===cfg.L01.infra)?.name} |`);
+  lines.push(`| L05 Agent & Autonomie | ${l05Label(cfg)} |`);
   lines.push("");
   if(h.triggers.length>0){
     lines.push(`## AI Act-triggers & gap-flags\n`);
