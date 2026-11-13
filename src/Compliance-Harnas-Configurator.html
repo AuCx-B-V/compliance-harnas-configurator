@@ -595,7 +595,8 @@ const HARNAS_LAYERS = {
   I:{title:"Inference & Veiligheid",sub:"auth · injectie · sandbox",codes:["I.01","I.02","I.03","I.04","I.05","I.06"]},
   O:{title:"Operationele weerbaarheid",sub:"incident · back-up · exit",codes:["O.01","O.02","O.03","O.04","O.05","O.06"]},
   T:{title:"Transparantie & Mens",sub:"kenbaarheid · HITL · rechten",codes:["T.01","T.02","T.03","T.04","T.05"]},
-  A:{title:"Toezicht & Assurance",sub:"log · audit · bewijs",codes:["A.01","A.02","A.03","A.04","A.05"]}
+  A:{title:"Toezicht & Assurance",sub:"log · audit · bewijs",codes:["A.01","A.02","A.03","A.04","A.05"]},
+  X:{title:"Agent & Autonomie (L05)",sub:"normenkader agent-inzet · A–J",codes:["X.01","X.02","X.03","X.04","X.05","X.06","X.07","X.08","X.09","X.10","X.11","X.12","X.13","X.14","X.15","X.16","X.17","X.18","X.19","X.20","X.21","X.22","X.23","X.24","X.25","X.26","X.27","X.28","X.29","X.30"]}
 };
 
 const harnas = {
@@ -636,7 +637,38 @@ const harnas = {
   "A.02":{n:"Audittrail modelwijzigingen",fw:["AIAct","DORA"],d:"Wie wijzigde wat, wanneer, met welke evaluatie-uitkomst."},
   "A.03":{n:"Periodieke onafhankelijke audit",fw:["AIAct","DORA","Cbw","AVG"],d:"Jaarlijkse assurance: NOREA, DigiD-type, of AI-Act conformiteit."},
   "A.04":{n:"KRI's & rapportage",fw:["DORA","Cbw"],d:"Maandelijks dashboard naar directie."},
-  "A.05":{n:"Bewijsmanagement",fw:["AIAct","AVG","DORA"],d:"Centraal, normgekoppeld, auditeerbaar."}
+  "A.05":{n:"Bewijsmanagement",fw:["AIAct","AVG","DORA"],d:"Centraal, normgekoppeld, auditeerbaar."},
+  /* L05 Agent & Autonomie — 30 normen uit Normenkader Agent-inzet (ref = normcode, ov = overlap met bestaande control) */
+  "X.01":{n:"Agentregister",fw:[],d:"Actueel register van alle agents met doel, autonomieniveau, eigenaar, modellen, tools en databronnen; afgestemd met het Algoritmeregister.",ref:"A.1",src:"IMDA dim. 1; ISO 42001; Algoritmekader",ov:["G.02"]},
+  "X.02":{n:"Eigenaar en vervaldatum",fw:[],d:"Elke agent heeft een benoemde functionele eigenaar en een einddatum of herbeoordelingsdatum.",ref:"A.2",src:"OWASP ASI10; IMDA dim. 2",ov:["G.03"]},
+  "X.03":{n:"Rollen in de keten",fw:["AIAct"],d:"Vastgelegd wie aanbieder, gebruiksverantwoordelijke en leverancier is, en wie aansprakelijk is bij schade.",ref:"A.3",src:"AI Act art. 26; IMDA dim. 2",ov:["G.03","G.05"]},
+  "X.04":{n:"Risicoklasse per agent",fw:["AIAct"],d:"Per agent bepaald of hij onder AI Act hoog-risico of artikel 50 valt (beslishulp AI-verordening).",ref:"B.1",src:"AI Act; Algoritmekader",ov:["G.04"]},
+  "X.05":{n:"Impactanalyse agentrisico's",fw:["AVG","AIAct"],d:"DPIA en waar nodig IAMA/FRIA behandelen agentspecifieke risico's (autonoom handelen, ketenfouten) expliciet.",ref:"B.2",src:"AVG art. 35; AI Act art. 27; IAMA",ov:["D.02"]},
+  "X.06":{n:"Handelingsgrenzen",fw:[],d:"Vooraf vastgelegd welke acties toegestaan en verboden zijn, en welke maximale impact (bedragen, aantallen, systemen) de agent mag veroorzaken.",ref:"B.3",src:"IMDA dim. 1; OWASP least agency",ov:["I.06"]},
+  "X.07":{n:"Eigen agent-identiteit",fw:[],d:"Elke agent draait onder een eigen, herleidbare identiteit, niet onder een persoonlijk of gedeeld service-account.",ref:"C.1",src:"NIST NCCoE; OWASP ASI03; BIO2",ov:["I.01"]},
+  "X.08":{n:"Minimale en kortlevende rechten",fw:[],d:"Alleen de rechten die de taak vereist, bij voorkeur als kortlevende tokens per taak.",ref:"C.2",src:"OWASP ASI03; BIO2",ov:["I.01"]},
+  "X.09":{n:"Periodieke rechtenreview",fw:[],d:"Agentrechten worden net zo vaak gereviewd als die van medewerkers.",ref:"C.3",src:"OWASP ASI03; BIO2",ov:["I.01"]},
+  "X.10":{n:"Toolallowlist",fw:[],d:"Alleen vooraf goedgekeurde tools, MCP-servers en API's, met parametervalidatie.",ref:"D.1",src:"OWASP ASI02, ASI04",ov:["I.06"]},
+  "X.11":{n:"AI-stuklijst (AIBOM)",fw:[],d:"Actuele inventaris van modellen, frameworks, plug-ins en MCP-servers, met herkomst.",ref:"D.2",src:"OWASP ASI04",ov:["M.01"]},
+  "X.12":{n:"Wijzigingsbeheer model, prompt en tools",fw:[],d:"Model-, prompt- en toolwijzigingen als change met test vóór productie, ook bij wijzigingen door de leverancier.",ref:"D.3",src:"BIO2; ISO 42001",ov:["M.04","A.02"]},
+  "X.13":{n:"Goedkeuringspunten",fw:["AIAct"],d:"Vastgelegd welke acties menselijke bevestiging vereisen; de beoordelaar ziet de ruwe actie, niet alleen de samenvatting van de agent.",ref:"E.1",src:"OWASP ASI09; AI Act art. 14",ov:["T.02"]},
+  "X.14":{n:"Automation bias",fw:[],d:"Gemonitord hoe vaak en hoe snel mensen goedkeuren of afwijzen; vrijwel nul afwijzingen is een signaal, geen succes.",ref:"E.2",src:"IMDA v1.5",ov:["T.02"]},
+  "X.15":{n:"Competentie toezichthouders",fw:["AIAct"],d:"Toezichthouders hebben aantoonbaar voldoende AI-geletterdheid voor die rol.",ref:"E.3",src:"AI Act art. 4 en 26",ov:[]},
+  "X.16":{n:"Onvertrouwde inhoud",fw:[],d:"Inhoud die de agent leest (mail, documenten, webpagina's, bijlagen) wordt als onvertrouwd behandeld en gescheiden van instructies.",ref:"F.1",src:"OWASP ASI01",ov:["I.02"]},
+  "X.17":{n:"Geheugenbeheer",fw:[],d:"Schrijfacties naar langetermijngeheugen gevalideerd, per gebruiker en taak afgebakend; beheerder kan geheugen inzien en wissen.",ref:"F.2",src:"OWASP ASI06",ov:[]},
+  "X.18":{n:"Datagating",fw:["AVG"],d:"Per databron vastgelegd welke classificatie de agent mag lezen en naar welke bestemmingen hij mag schrijven.",ref:"F.3",src:"BIO2; AVG",ov:["D.03","D.06"]},
+  "X.19":{n:"Sandbox en uitgaand verkeer",fw:[],d:"Code-uitvoering in een geïsoleerde omgeving met standaard geblokkeerd uitgaand netwerkverkeer.",ref:"G.1",src:"OWASP ASI05; Chan et al. 2026",ov:["I.06","I.05"]},
+  "X.20":{n:"Scheiding omgevingen",fw:[],d:"Een agent in ontwikkeling of test heeft geen toegang tot productiedata en -systemen.",ref:"G.2",src:"OWASP ASI08; BIO2",ov:[]},
+  "X.21":{n:"Agent-tot-agentverkeer",fw:[],d:"Communicatie tussen agents geauthenticeerd, delegatierechten vastgelegd, ongeautoriseerde kanalen technisch uitgesloten.",ref:"G.3",src:"OWASP ASI07; Hugging Face-incident",ov:[]},
+  "X.22":{n:"Volledige actielog",fw:["AIAct"],d:"Alle toolaanroepen, delegaties, geheugenschrijfacties en goedkeuringen gelogd, gekoppeld aan agent-identiteit en opdrachtgever.",ref:"H.1",src:"AI Act art. 12 en 26; IMDA dim. 3",ov:["A.01"]},
+  "X.23":{n:"Onmanipuleerbare logs",fw:[],d:"De agent kan zijn eigen logs en transcripten niet wijzigen of verwijderen (write-once opslag).",ref:"H.2",src:"Chan et al. 2026; BIO2",ov:["A.01"]},
+  "X.24":{n:"Gedragsbaseline",fw:[],d:"Normaal gedrag vastgelegd; afwijkingen (volume, nieuwe tools, nieuwe bestemmingen) worden gealarmeerd.",ref:"H.3",src:"OWASP ASI10",ov:["I.04"]},
+  "X.25":{n:"Werkende noodstop",fw:[],d:"Agent binnen vastgestelde tijd stil te zetten, inclusief lopende taken en tokens; aangetoond met een testverslag.",ref:"I.1",src:"OWASP ASI10; IMDA dim. 3",ov:["O.03"]},
+  "X.26":{n:"Circuit breakers",fw:[],d:"Agent stopt automatisch bij overschrijding van drempels (aantal acties, bedragen, foutpercentage).",ref:"I.2",src:"OWASP ASI08",ov:["I.04"]},
+  "X.27":{n:"Agentincidenten in incidentproces",fw:["Cbw","AIAct"],d:"Agentincidenten opgenomen in het incident- en meldproces, inclusief melding aan AP, leverancier en waar van toepassing NCSC/CSIRT.",ref:"I.3",src:"BIO2; Cbw; AI Act art. 26",ov:["O.03","O.04"]},
+  "X.28":{n:"Kenbaarheid",fw:["AIAct"],d:"Burgers weten dat zij met een AI-systeem communiceren; AI-gegenereerde inhoud is herkenbaar.",ref:"J.1",src:"AI Act art. 50",ov:["T.01","T.05"]},
+  "X.29":{n:"Motivering en bezwaar",fw:[],d:"Een besluit waaraan een agent bijdroeg kan worden uitgelegd en door een mens worden heroverwogen.",ref:"J.2",src:"Awb art. 3:46; Algoritmekader",ov:["T.03","T.04"]},
+  "X.30":{n:"Publicatie",fw:[],d:"De agent is, voor zover van toepassing, opgenomen in het Algoritmeregister.",ref:"J.3",src:"Algoritmekader",ov:["G.02"]}
 };
 
 /* AuCx 4-lagen — invullingen met ctrl-activering */
@@ -694,10 +726,10 @@ const aucx = {
     id:"L05", name:"Agent & Autonomie", purpose:"handelen · tools · delegatie",
     invul:[
       { id:"none", name:"geen agent", risk:"l", meta:"alleen inference", desc:"Geen tool-use of zelfstandige acties; het systeem geeft alleen antwoord.", ctrl:[] },
-      { id:"A1", name:"A1 · assisterend", risk:"l", meta:"lezen + voorstellen", desc:"Alleen lezen en voorstellen; een mens voert uit.", ctrl:[] },
-      { id:"A2", name:"A2 · bevestigd handelen", risk:"m", meta:"goedkeuring per actie", desc:"Voert acties uit na expliciete goedkeuring per actie.", ctrl:[] },
-      { id:"A3", name:"A3 · begrensd autonoom", risk:"h", meta:"binnen vaste grenzen", desc:"Handelt zelfstandig binnen vooraf vastgestelde grenzen.", ctrl:[] },
-      { id:"A4", name:"A4 · multi-agent / zelfsturend", risk:"h", meta:"delegeert, kiest tools", desc:"Agents delegeren taken aan elkaar of selecteren zelf tools.", ctrl:[] }
+      { id:"A1", name:"A1 · assisterend", risk:"l", meta:"lezen + voorstellen", desc:"Alleen lezen en voorstellen; een mens voert uit.", ctrl:["X.01","X.02","X.03","X.04","X.05","X.06","X.13","X.14","X.15","X.28","X.29","X.30"] },
+      { id:"A2", name:"A2 · bevestigd handelen", risk:"m", meta:"goedkeuring per actie", desc:"Voert acties uit na expliciete goedkeuring per actie.", ctrl:["X.01","X.02","X.03","X.04","X.05","X.06","X.07","X.08","X.09","X.10","X.11","X.12","X.13","X.14","X.15","X.16","X.17","X.18","X.28","X.29","X.30"] },
+      { id:"A3", name:"A3 · begrensd autonoom", risk:"h", meta:"binnen vaste grenzen", desc:"Handelt zelfstandig binnen vooraf vastgestelde grenzen.", ctrl:["X.01","X.02","X.03","X.04","X.05","X.06","X.07","X.08","X.09","X.10","X.11","X.12","X.13","X.14","X.15","X.16","X.17","X.18","X.19","X.20","X.21","X.22","X.23","X.24","X.25","X.26","X.27","X.28","X.29","X.30"] },
+      { id:"A4", name:"A4 · multi-agent / zelfsturend", risk:"h", meta:"delegeert, kiest tools", desc:"Agents delegeren taken aan elkaar of selecteren zelf tools.", ctrl:["X.01","X.02","X.03","X.04","X.05","X.06","X.07","X.08","X.09","X.10","X.11","X.12","X.13","X.14","X.15","X.16","X.17","X.18","X.19","X.20","X.21","X.22","X.23","X.24","X.25","X.26","X.27","X.28","X.29","X.30"] }
     ]
   }
 };
@@ -1158,6 +1190,10 @@ function generateHarnas(cfg){
     if(inv) add(inv.ctrl, `L01 · ${inv.name}`);
   }
 
+  // L05 Agent & Autonomie
+  const l05 = cfg.L05 ? aucx.L05.invul.find(x=>x.id===(cfg.L05.agent===false ? "none" : cfg.L05.level)) : null;
+  if(l05) add(l05.ctrl, `L05 · ${l05.name}`);
+
   // AI Act triggers
   const activeTriggers = aiActTriggers.filter(t => {
     try { return t.cond(cfg); } catch(e){ return false; }
@@ -1181,6 +1217,7 @@ function generateHarnas(cfg){
       carrier,
       cbwRef: cbwReverse[c] || [],
       digidRef: digidReverse[c] || [],
+      ref: h.ref, src: h.src, ov: h.ov || [],
       gapFlag: gapCtrls.has(c)
     };
   }).filter(Boolean);
@@ -1194,7 +1231,8 @@ function generateHarnas(cfg){
     aucx.L03.pgInvul.find(x=>x.id===cfg.L03?.pg),
     aucx.L02.invul.find(x=>x.id===cfg.L02?.model),
     aucx.L02.ftInvul.find(x=>x.id===cfg.L02?.finetune),
-    aucx.L01.invul.find(x=>x.id===cfg.L01?.infra)
+    aucx.L01.invul.find(x=>x.id===cfg.L01?.infra),
+    l05
   ].filter(Boolean);
   choices.forEach(ch => { if(risk[ch.risk]!==undefined) risk[ch.risk]++; });
 
@@ -1950,7 +1988,7 @@ function renderOverview(cfg, h){
 
   document.getElementById("tab-overview").innerHTML = `
     <div class="disclaimer"><b>Disclaimer</b>
-      CBW/NIS2 en DigiD cross-references zijn een best-effort mapping op basis van openbare normeringen — verifieer per audit-opdracht. De 38 harnas-controls komen 1-op-1 uit het v1.1-diagram.
+      CBW/NIS2 en DigiD cross-references zijn een best-effort mapping op basis van openbare normeringen — verifieer per audit-opdracht. De 38 harnas-controls komen 1-op-1 uit het v1.1-diagram; de 30 L05-controls (X.01–X.30) uit het Normenkader Agent-inzet.
     </div>
     <div class="ov-grid">
       <div class="ov-block">
@@ -1989,9 +2027,11 @@ function renderOverview(cfg, h){
 }
 
 function renderControls(cfg, h){
+  // L05-normen blijven zichtbaar: veel bronnen (OWASP, BIO2, IMDA) vallen buiten de vier kaderfilters
   const filtered = h.controls.filter(c =>
-    c.fw.some(f => state.fwFilter.includes(f))
+    c.layer==="X" || c.fw.some(f => state.fwFilter.includes(f))
   );
+  const l05Missing = cfg.L04?.agents === true && !(cfg.L05?.agent===true && cfg.L05.level);
 
   const chips = ["AVG","DORA","Cbw","AIAct"].map(fw=>
     `<div class="chip ${state.fwFilter.includes(fw)?"":"off"}" data-fw="${fw}"><span class="dot"></span>${fw==="Cbw"?"Cbw/NIS2":fw}</div>`
@@ -2017,6 +2057,7 @@ function renderControls(cfg, h){
       ${chips}
       <span style="margin-left:auto;font-family:'JetBrains Mono',monospace;font-size:10px;color:var(--muted);padding:6px 0">${filtered.length}/${h.controls.length} controls zichtbaar</span>
     </div>
+    ${l05Missing ? '<div class="disclaimer"><b>Autonomieniveau ontbreekt</b> Deze configuratie gebruikt agents, maar heeft nog geen L05-niveau. Open de wizard en kies in stap 6 het niveau; tot dan zijn de agent-normen niet geactiveerd.</div>' : ''}
     ${html || '<p style="font-style:italic;color:var(--muted)">Geen controls binnen dit filter.</p>'}
   `;
 
@@ -2071,13 +2112,15 @@ function renderCtrlRow(cfg, c){
     : "";
   const digidRef = c.digidRef.length ? `<span title="DigiD">DigiD: ${c.digidRef.map(n=>n.split(" ")[0]).join(", ")}</span>` : "";
   const gap = c.gapFlag ? `<span class="gap">⚑ gap</span>` : "";
+  const normRef = c.ref ? `<span title="Normenkader Agent-inzet · bron: ${esc(c.src)}">Norm ${c.ref}</span>` : "";
+  const ovRef = c.ov.length ? `<span title="Overlapt met bestaande control(s); niet dubbel toetsen">≈ ${c.ov.join(", ")}</span>` : "";
   return `
     <div class="ctrl-row">
       <div class="ctrl-code">${c.code}</div>
       <div class="ctrl-body">
         <strong>${c.name}</strong>
         <div class="ctrl-desc">${c.desc}</div>
-        <div class="ctrl-meta">${fwBadges}${cbwRef}${digidRef}${gap}</div>
+        <div class="ctrl-meta">${fwBadges}${normRef}${ovRef}${cbwRef}${digidRef}${gap}</div>
         <div class="ctrl-trig">Getriggerd door: ${c.triggeredBy.map(esc).join(" · ")}</div>
       </div>
       <div class="ctrl-status" data-code="${c.code}">
