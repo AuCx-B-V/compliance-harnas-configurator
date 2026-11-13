@@ -638,37 +638,37 @@ const harnas = {
   "A.03":{n:"Periodieke onafhankelijke audit",fw:["AIAct","DORA","Cbw","AVG"],d:"Jaarlijkse assurance: NOREA, DigiD-type, of AI-Act conformiteit."},
   "A.04":{n:"KRI's & rapportage",fw:["DORA","Cbw"],d:"Maandelijks dashboard naar directie."},
   "A.05":{n:"Bewijsmanagement",fw:["AIAct","AVG","DORA"],d:"Centraal, normgekoppeld, auditeerbaar."},
-  /* L05 Agent & Autonomie — 30 normen uit Normenkader Agent-inzet (ref = normcode, ov = overlap met bestaande control) */
-  "X.01":{n:"Agentregister",fw:[],d:"Actueel register van alle agents met doel, autonomieniveau, eigenaar, modellen, tools en databronnen; afgestemd met het Algoritmeregister.",ref:"A.1",src:"IMDA dim. 1; ISO 42001; Algoritmekader",ov:["G.02"]},
-  "X.02":{n:"Eigenaar en vervaldatum",fw:[],d:"Elke agent heeft een benoemde functionele eigenaar en een einddatum of herbeoordelingsdatum.",ref:"A.2",src:"OWASP ASI10; IMDA dim. 2",ov:["G.03"]},
-  "X.03":{n:"Rollen in de keten",fw:["AIAct"],d:"Vastgelegd wie aanbieder, gebruiksverantwoordelijke en leverancier is, en wie aansprakelijk is bij schade.",ref:"A.3",src:"AI Act art. 26; IMDA dim. 2",ov:["G.03","G.05"]},
-  "X.04":{n:"Risicoklasse per agent",fw:["AIAct"],d:"Per agent bepaald of hij onder AI Act hoog-risico of artikel 50 valt (beslishulp AI-verordening).",ref:"B.1",src:"AI Act; Algoritmekader",ov:["G.04"]},
-  "X.05":{n:"Impactanalyse agentrisico's",fw:["AVG","AIAct"],d:"DPIA en waar nodig IAMA/FRIA behandelen agentspecifieke risico's (autonoom handelen, ketenfouten) expliciet.",ref:"B.2",src:"AVG art. 35; AI Act art. 27; IAMA",ov:["D.02"]},
-  "X.06":{n:"Handelingsgrenzen",fw:[],d:"Vooraf vastgelegd welke acties toegestaan en verboden zijn, en welke maximale impact (bedragen, aantallen, systemen) de agent mag veroorzaken.",ref:"B.3",src:"IMDA dim. 1; OWASP least agency",ov:["I.06"]},
-  "X.07":{n:"Eigen agent-identiteit",fw:[],d:"Elke agent draait onder een eigen, herleidbare identiteit, niet onder een persoonlijk of gedeeld service-account.",ref:"C.1",src:"NIST NCCoE; OWASP ASI03; BIO2",ov:["I.01"]},
-  "X.08":{n:"Minimale en kortlevende rechten",fw:[],d:"Alleen de rechten die de taak vereist, bij voorkeur als kortlevende tokens per taak.",ref:"C.2",src:"OWASP ASI03; BIO2",ov:["I.01"]},
-  "X.09":{n:"Periodieke rechtenreview",fw:[],d:"Agentrechten worden net zo vaak gereviewd als die van medewerkers.",ref:"C.3",src:"OWASP ASI03; BIO2",ov:["I.01"]},
-  "X.10":{n:"Toolallowlist",fw:[],d:"Alleen vooraf goedgekeurde tools, MCP-servers en API's, met parametervalidatie.",ref:"D.1",src:"OWASP ASI02, ASI04",ov:["I.06"]},
-  "X.11":{n:"AI-stuklijst (AIBOM)",fw:[],d:"Actuele inventaris van modellen, frameworks, plug-ins en MCP-servers, met herkomst.",ref:"D.2",src:"OWASP ASI04",ov:["M.01"]},
-  "X.12":{n:"Wijzigingsbeheer model, prompt en tools",fw:[],d:"Model-, prompt- en toolwijzigingen als change met test vóór productie, ook bij wijzigingen door de leverancier.",ref:"D.3",src:"BIO2; ISO 42001",ov:["M.04","A.02"]},
-  "X.13":{n:"Goedkeuringspunten",fw:["AIAct"],d:"Vastgelegd welke acties menselijke bevestiging vereisen; de beoordelaar ziet de ruwe actie, niet alleen de samenvatting van de agent.",ref:"E.1",src:"OWASP ASI09; AI Act art. 14",ov:["T.02"]},
-  "X.14":{n:"Automation bias",fw:[],d:"Gemonitord hoe vaak en hoe snel mensen goedkeuren of afwijzen; vrijwel nul afwijzingen is een signaal, geen succes.",ref:"E.2",src:"IMDA v1.5",ov:["T.02"]},
-  "X.15":{n:"Competentie toezichthouders",fw:["AIAct"],d:"Toezichthouders hebben aantoonbaar voldoende AI-geletterdheid voor die rol.",ref:"E.3",src:"AI Act art. 4 en 26",ov:[]},
-  "X.16":{n:"Onvertrouwde inhoud",fw:[],d:"Inhoud die de agent leest (mail, documenten, webpagina's, bijlagen) wordt als onvertrouwd behandeld en gescheiden van instructies.",ref:"F.1",src:"OWASP ASI01",ov:["I.02"]},
-  "X.17":{n:"Geheugenbeheer",fw:[],d:"Schrijfacties naar langetermijngeheugen gevalideerd, per gebruiker en taak afgebakend; beheerder kan geheugen inzien en wissen.",ref:"F.2",src:"OWASP ASI06",ov:[]},
-  "X.18":{n:"Datagating",fw:["AVG"],d:"Per databron vastgelegd welke classificatie de agent mag lezen en naar welke bestemmingen hij mag schrijven.",ref:"F.3",src:"BIO2; AVG",ov:["D.03","D.06"]},
-  "X.19":{n:"Sandbox en uitgaand verkeer",fw:[],d:"Code-uitvoering in een geïsoleerde omgeving met standaard geblokkeerd uitgaand netwerkverkeer.",ref:"G.1",src:"OWASP ASI05; Chan et al. 2026",ov:["I.06","I.05"]},
-  "X.20":{n:"Scheiding omgevingen",fw:[],d:"Een agent in ontwikkeling of test heeft geen toegang tot productiedata en -systemen.",ref:"G.2",src:"OWASP ASI08; BIO2",ov:[]},
-  "X.21":{n:"Agent-tot-agentverkeer",fw:[],d:"Communicatie tussen agents geauthenticeerd, delegatierechten vastgelegd, ongeautoriseerde kanalen technisch uitgesloten.",ref:"G.3",src:"OWASP ASI07; Hugging Face-incident",ov:[]},
-  "X.22":{n:"Volledige actielog",fw:["AIAct"],d:"Alle toolaanroepen, delegaties, geheugenschrijfacties en goedkeuringen gelogd, gekoppeld aan agent-identiteit en opdrachtgever.",ref:"H.1",src:"AI Act art. 12 en 26; IMDA dim. 3",ov:["A.01"]},
-  "X.23":{n:"Onmanipuleerbare logs",fw:[],d:"De agent kan zijn eigen logs en transcripten niet wijzigen of verwijderen (write-once opslag).",ref:"H.2",src:"Chan et al. 2026; BIO2",ov:["A.01"]},
-  "X.24":{n:"Gedragsbaseline",fw:[],d:"Normaal gedrag vastgelegd; afwijkingen (volume, nieuwe tools, nieuwe bestemmingen) worden gealarmeerd.",ref:"H.3",src:"OWASP ASI10",ov:["I.04"]},
-  "X.25":{n:"Werkende noodstop",fw:[],d:"Agent binnen vastgestelde tijd stil te zetten, inclusief lopende taken en tokens; aangetoond met een testverslag.",ref:"I.1",src:"OWASP ASI10; IMDA dim. 3",ov:["O.03"]},
-  "X.26":{n:"Circuit breakers",fw:[],d:"Agent stopt automatisch bij overschrijding van drempels (aantal acties, bedragen, foutpercentage).",ref:"I.2",src:"OWASP ASI08",ov:["I.04"]},
-  "X.27":{n:"Agentincidenten in incidentproces",fw:["Cbw","AIAct"],d:"Agentincidenten opgenomen in het incident- en meldproces, inclusief melding aan AP, leverancier en waar van toepassing NCSC/CSIRT.",ref:"I.3",src:"BIO2; Cbw; AI Act art. 26",ov:["O.03","O.04"]},
-  "X.28":{n:"Kenbaarheid",fw:["AIAct"],d:"Burgers weten dat zij met een AI-systeem communiceren; AI-gegenereerde inhoud is herkenbaar.",ref:"J.1",src:"AI Act art. 50",ov:["T.01","T.05"]},
-  "X.29":{n:"Motivering en bezwaar",fw:[],d:"Een besluit waaraan een agent bijdroeg kan worden uitgelegd en door een mens worden heroverwogen.",ref:"J.2",src:"Awb art. 3:46; Algoritmekader",ov:["T.03","T.04"]},
-  "X.30":{n:"Publicatie",fw:[],d:"De agent is, voor zover van toepassing, opgenomen in het Algoritmeregister.",ref:"J.3",src:"Algoritmekader",ov:["G.02"]}
+  /* L05 Agent & Autonomie — 30 normen uit Normenkader Agent-inzet (ref = normcode, ov = volledige overlap, ovp = gedeeltelijke overlap met bestaande control) */
+  "X.01":{n:"Agentregister",fw:[],d:"Actueel register van alle agents met doel, autonomieniveau, eigenaar, modellen, tools en databronnen; afgestemd met het Algoritmeregister.",ref:"A.1",src:"IMDA dim. 1; ISO 42001; Algoritmekader",ov:[],ovp:["G.02"]},
+  "X.02":{n:"Eigenaar en vervaldatum",fw:[],d:"Elke agent heeft een benoemde functionele eigenaar en een einddatum of herbeoordelingsdatum.",ref:"A.2",src:"OWASP ASI10; IMDA dim. 2",ov:[],ovp:["G.03"]},
+  "X.03":{n:"Rollen in de keten",fw:["AIAct"],d:"Vastgelegd wie aanbieder, gebruiksverantwoordelijke en leverancier is, en wie aansprakelijk is bij schade.",ref:"A.3",src:"AI Act art. 26; IMDA dim. 2",ov:[],ovp:["G.03","G.05"]},
+  "X.04":{n:"Risicoklasse per agent",fw:["AIAct"],d:"Per agent bepaald of hij onder AI Act hoog-risico of artikel 50 valt (beslishulp AI-verordening).",ref:"B.1",src:"AI Act; Algoritmekader",ov:["G.04"],ovp:[]},
+  "X.05":{n:"Impactanalyse agentrisico's",fw:["AVG","AIAct"],d:"DPIA en waar nodig IAMA/FRIA behandelen agentspecifieke risico's (autonoom handelen, ketenfouten) expliciet.",ref:"B.2",src:"AVG art. 35; AI Act art. 27; IAMA",ov:[],ovp:["D.02"]},
+  "X.06":{n:"Handelingsgrenzen",fw:[],d:"Vooraf vastgelegd welke acties toegestaan en verboden zijn, en welke maximale impact (bedragen, aantallen, systemen) de agent mag veroorzaken.",ref:"B.3",src:"IMDA dim. 1; OWASP least agency",ov:[],ovp:["I.06"]},
+  "X.07":{n:"Eigen agent-identiteit",fw:[],d:"Elke agent draait onder een eigen, herleidbare identiteit, niet onder een persoonlijk of gedeeld service-account.",ref:"C.1",src:"NIST NCCoE; OWASP ASI03; BIO2",ov:[],ovp:["I.01"]},
+  "X.08":{n:"Minimale en kortlevende rechten",fw:[],d:"Alleen de rechten die de taak vereist, bij voorkeur als kortlevende tokens per taak.",ref:"C.2",src:"OWASP ASI03; BIO2",ov:[],ovp:["I.01"]},
+  "X.09":{n:"Periodieke rechtenreview",fw:[],d:"Agentrechten worden net zo vaak gereviewd als die van medewerkers.",ref:"C.3",src:"OWASP ASI03; BIO2",ov:[],ovp:["I.01"]},
+  "X.10":{n:"Toolallowlist",fw:[],d:"Alleen vooraf goedgekeurde tools, MCP-servers en API's, met parametervalidatie.",ref:"D.1",src:"OWASP ASI02, ASI04",ov:[],ovp:["I.06"]},
+  "X.11":{n:"AI-stuklijst (AIBOM)",fw:[],d:"Actuele inventaris van modellen, frameworks, plug-ins en MCP-servers, met herkomst.",ref:"D.2",src:"OWASP ASI04",ov:[],ovp:["M.01"]},
+  "X.12":{n:"Wijzigingsbeheer model, prompt en tools",fw:[],d:"Model-, prompt- en toolwijzigingen als change met test vóór productie, ook bij wijzigingen door de leverancier.",ref:"D.3",src:"BIO2; ISO 42001",ov:[],ovp:["M.04","A.02"]},
+  "X.13":{n:"Goedkeuringspunten",fw:["AIAct"],d:"Vastgelegd welke acties menselijke bevestiging vereisen; de beoordelaar ziet de ruwe actie, niet alleen de samenvatting van de agent.",ref:"E.1",src:"OWASP ASI09; AI Act art. 14",ov:[],ovp:["T.02"]},
+  "X.14":{n:"Automation bias",fw:[],d:"Gemonitord hoe vaak en hoe snel mensen goedkeuren of afwijzen; vrijwel nul afwijzingen is een signaal, geen succes.",ref:"E.2",src:"IMDA v1.5",ov:[],ovp:[]},
+  "X.15":{n:"Competentie toezichthouders",fw:["AIAct"],d:"Toezichthouders hebben aantoonbaar voldoende AI-geletterdheid voor die rol.",ref:"E.3",src:"AI Act art. 4 en 26",ov:[],ovp:[]},
+  "X.16":{n:"Onvertrouwde inhoud",fw:[],d:"Inhoud die de agent leest (mail, documenten, webpagina's, bijlagen) wordt als onvertrouwd behandeld en gescheiden van instructies.",ref:"F.1",src:"OWASP ASI01",ov:["I.02"],ovp:[]},
+  "X.17":{n:"Geheugenbeheer",fw:[],d:"Schrijfacties naar langetermijngeheugen gevalideerd, per gebruiker en taak afgebakend; beheerder kan geheugen inzien en wissen.",ref:"F.2",src:"OWASP ASI06",ov:[],ovp:[]},
+  "X.18":{n:"Datagating",fw:["AVG"],d:"Per databron vastgelegd welke classificatie de agent mag lezen en naar welke bestemmingen hij mag schrijven.",ref:"F.3",src:"BIO2; AVG",ov:[],ovp:["D.03","D.06"]},
+  "X.19":{n:"Sandbox en uitgaand verkeer",fw:[],d:"Code-uitvoering in een geïsoleerde omgeving met standaard geblokkeerd uitgaand netwerkverkeer.",ref:"G.1",src:"OWASP ASI05; Chan et al. 2026",ov:["I.06","I.05"],ovp:[]},
+  "X.20":{n:"Scheiding omgevingen",fw:[],d:"Een agent in ontwikkeling of test heeft geen toegang tot productiedata en -systemen.",ref:"G.2",src:"OWASP ASI08; BIO2",ov:[],ovp:[]},
+  "X.21":{n:"Agent-tot-agentverkeer",fw:[],d:"Communicatie tussen agents geauthenticeerd, delegatierechten vastgelegd, ongeautoriseerde kanalen technisch uitgesloten.",ref:"G.3",src:"OWASP ASI07; Hugging Face-incident",ov:[],ovp:[]},
+  "X.22":{n:"Volledige actielog",fw:["AIAct"],d:"Alle toolaanroepen, delegaties, geheugenschrijfacties en goedkeuringen gelogd, gekoppeld aan agent-identiteit en opdrachtgever.",ref:"H.1",src:"AI Act art. 12 en 26; IMDA dim. 3",ov:[],ovp:["A.01"]},
+  "X.23":{n:"Onmanipuleerbare logs",fw:[],d:"De agent kan zijn eigen logs en transcripten niet wijzigen of verwijderen (write-once opslag).",ref:"H.2",src:"Chan et al. 2026; BIO2",ov:["A.01"],ovp:[]},
+  "X.24":{n:"Gedragsbaseline",fw:[],d:"Normaal gedrag vastgelegd; afwijkingen (volume, nieuwe tools, nieuwe bestemmingen) worden gealarmeerd.",ref:"H.3",src:"OWASP ASI10",ov:[],ovp:["I.04"]},
+  "X.25":{n:"Werkende noodstop",fw:[],d:"Agent binnen vastgestelde tijd stil te zetten, inclusief lopende taken en tokens; aangetoond met een testverslag.",ref:"I.1",src:"OWASP ASI10; IMDA dim. 3",ov:[],ovp:["O.03"]},
+  "X.26":{n:"Circuit breakers",fw:[],d:"Agent stopt automatisch bij overschrijding van drempels (aantal acties, bedragen, foutpercentage).",ref:"I.2",src:"OWASP ASI08",ov:[],ovp:["I.04"]},
+  "X.27":{n:"Agentincidenten in incidentproces",fw:["Cbw","AIAct"],d:"Agentincidenten opgenomen in het incident- en meldproces, inclusief melding aan AP, leverancier en waar van toepassing NCSC/CSIRT.",ref:"I.3",src:"BIO2; Cbw; AI Act art. 26",ov:["O.03","O.04"],ovp:[]},
+  "X.28":{n:"Kenbaarheid",fw:["AIAct"],d:"Burgers weten dat zij met een AI-systeem communiceren; AI-gegenereerde inhoud is herkenbaar.",ref:"J.1",src:"AI Act art. 50",ov:["T.01","T.05"],ovp:[]},
+  "X.29":{n:"Motivering en bezwaar",fw:[],d:"Een besluit waaraan een agent bijdroeg kan worden uitgelegd en door een mens worden heroverwogen.",ref:"J.2",src:"Awb art. 3:46; Algoritmekader",ov:["T.03","T.04"],ovp:[]},
+  "X.30":{n:"Publicatie",fw:[],d:"De agent is, voor zover van toepassing, opgenomen in het Algoritmeregister.",ref:"J.3",src:"Algoritmekader",ov:[],ovp:["G.02"]}
 };
 
 /* AuCx 4-lagen — invullingen met ctrl-activering */
@@ -1223,7 +1223,7 @@ function generateHarnas(cfg){
       carrier,
       cbwRef: cbwReverse[c] || [],
       digidRef: digidReverse[c] || [],
-      ref: h.ref, src: h.src, ov: h.ov || [],
+      ref: h.ref, src: h.src, ov: h.ov || [], ovp: h.ovp || [],
       gapFlag: gapCtrls.has(c)
     };
   }).filter(Boolean);
@@ -2119,7 +2119,8 @@ function renderCtrlRow(cfg, c){
   const digidRef = c.digidRef.length ? `<span title="DigiD">DigiD: ${c.digidRef.map(n=>n.split(" ")[0]).join(", ")}</span>` : "";
   const gap = c.gapFlag ? `<span class="gap">⚑ gap</span>` : "";
   const normRef = c.ref ? `<span title="Normenkader Agent-inzet · bron: ${esc(c.src)}">Norm ${c.ref}</span>` : "";
-  const ovRef = c.ov.length ? `<span title="Overlapt met bestaande control(s); niet dubbel toetsen">≈ ${c.ov.join(", ")}</span>` : "";
+  const ovRef = (c.ov.length ? `<span title="Volledige overlap: bewijs van deze control(s) dekt de norm">≈ ${c.ov.join(", ")}</span>` : "")
+    + (c.ovp.length ? `<span title="Gedeeltelijke overlap: bewijs hergebruiken, maar de norm vraagt meer — zelfstandig toetsen">∼ ${c.ovp.join(", ")}</span>` : "");
   return `
     <div class="ctrl-row">
       <div class="ctrl-code">${c.code}</div>
