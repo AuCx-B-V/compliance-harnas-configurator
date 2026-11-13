@@ -56,6 +56,18 @@
         "infra": { "type": "string", "enum": ["onprem", "cloud", "hybrid", "edge"] }
       }
     },
+    "L05": {
+      "type": "object",
+      "description": "Agent & Autonomie. Optional for backward compatibility; absent in configs created before L05.",
+      "required": ["agent"],
+      "properties": {
+        "agent": { "type": "boolean" },
+        "level": { "type": "string", "enum": ["A1", "A2", "A3", "A4"] }
+      },
+      "if": { "properties": { "agent": { "const": true } } },
+      "then": { "required": ["level"] },
+      "else": { "not": { "required": ["level"] } }
+    },
     "controlStatus": {
       "type": "object",
       "description": "Map of harnas-control code (e.g. G.01, D.04, A.01) to status entry.",

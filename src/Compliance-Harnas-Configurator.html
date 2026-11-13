@@ -689,6 +689,16 @@ const aucx = {
       { id:"hybrid", name:"hybride", risk:"m", meta:"mix", desc:"Combinatie afhankelijk van workload en gevoeligheid.", ctrl:["G.05","D.04","I.05","O.01","O.05","O.06"] },
       { id:"edge", name:"edge", risk:"l", meta:"op apparaat", desc:"Compute op laptop/telefoon/sensor; data blijft lokaal.", ctrl:["I.05","D.04","O.05","O.06","D.06"] }
     ]
+  },
+  L05: {
+    id:"L05", name:"Agent & Autonomie", purpose:"handelen · tools · delegatie",
+    invul:[
+      { id:"none", name:"geen agent", risk:"l", meta:"alleen inference", desc:"Geen tool-use of zelfstandige acties; het systeem geeft alleen antwoord.", ctrl:[] },
+      { id:"A1", name:"A1 · assisterend", risk:"l", meta:"lezen + voorstellen", desc:"Alleen lezen en voorstellen; een mens voert uit.", ctrl:[] },
+      { id:"A2", name:"A2 · bevestigd handelen", risk:"m", meta:"goedkeuring per actie", desc:"Voert acties uit na expliciete goedkeuring per actie.", ctrl:[] },
+      { id:"A3", name:"A3 · begrensd autonoom", risk:"h", meta:"binnen vaste grenzen", desc:"Handelt zelfstandig binnen vooraf vastgestelde grenzen.", ctrl:[] },
+      { id:"A4", name:"A4 · multi-agent / zelfsturend", risk:"h", meta:"delegeert, kiest tools", desc:"Agents delegeren taken aan elkaar of selecteren zelf tools.", ctrl:[] }
+    ]
   }
 };
 
@@ -1049,6 +1059,7 @@ const SCHEMA = {
   L02mod:  ["pub_closed","pub_open","priv_closed","priv_open"],
   L02ft:   ["ft_no","ft_yes"],
   L01inf:  ["onprem","cloud","hybrid","edge"],
+  L05lvl:  ["A1","A2","A3","A4"],
   statuses:["open","prog","done","na","risk"]
 };
 function validateConfig(obj){
@@ -1065,6 +1076,8 @@ function validateConfig(obj){
   if(obj.L02?.model && !SCHEMA.L02mod.includes(obj.L02.model)) errors.push(`L02.model ongeldig: ${obj.L02.model}`);
   if(obj.L02?.finetune && !SCHEMA.L02ft.includes(obj.L02.finetune)) errors.push(`L02.finetune ongeldig: ${obj.L02.finetune}`);
   if(obj.L01?.infra && !SCHEMA.L01inf.includes(obj.L01.infra)) errors.push(`L01.infra ongeldig: ${obj.L01.infra}`);
+  if(obj.L05 && typeof obj.L05.agent !== "boolean") errors.push(`L05.agent ontbreekt of is geen boolean`);
+  if(obj.L05?.agent === true && !SCHEMA.L05lvl.includes(obj.L05.level)) errors.push(`L05.level ongeldig: ${obj.L05.level}`);
   if(obj.controlStatus && typeof obj.controlStatus === "object"){
     Object.entries(obj.controlStatus).forEach(([code, st])=>{
       if(!harnas[code]) errors.push(`controlStatus ${code}: onbekende control-code`);
@@ -1189,14 +1202,15 @@ function generateHarnas(cfg){
 }
 
 /* ============================================================
-   WIZARD — 5 stappen
+   WIZARD — 6 stappen
    ============================================================ */
 const WIZARD_STEPS = [
   { id:1, label:"Use-case", layer:"—" },
   { id:2, label:"Applicatie", layer:"L04" },
   { id:3, label:"Data", layer:"L03" },
   { id:4, label:"Model", layer:"L02" },
-  { id:5, label:"Infra", layer:"L01" }
+  { id:5, label:"Infra", layer:"L01" },
+  { id:6, label:"Agent", layer:"L05" }
 ];
 
 let wizardState = null; // {step, draft}
@@ -1220,9 +1234,12 @@ function openWizard(existingId){
       L03: { scope:"", pg:"pg_none", confidential:false },
       L02: { model:"", finetune:"ft_no" },
       L01: { infra:"" },
+      L05: {},
       controlStatus: {}
     }
   };
+  // Oude configs zonder L05: 'agents: true' laat het niveau leeg, zodat stap 6 een keuze afdwingt
+  if(!wizardState.draft.L05) wizardState.draft.L05 = { agent: wizardState.draft.L04?.agents === true ? true : false };
   switchView("wizard");
   renderWizard();
 }
@@ -1241,7 +1258,7 @@ function renderWizard(){
 
   document.getElementById("btnBack").disabled = step===1;
   const btnNext = document.getElementById("btnNext");
-  btnNext.textContent = step===5 ? "Opslaan & openen" : "Verder →";
+  btnNext.textContent = step===WIZARD_STEPS.length ? "Opslaan & openen" : "Verder →";
   btnNext.disabled = !stepValid(step, draft);
 }
 
@@ -1285,10 +1302,6 @@ function renderStep(step, d){
     </div>
     <div class="field"><label>Prompt-aanpak *</label>
       <div class="choice-grid">${choiceCards(aucx.L04.promptInvul, d.L04.prompts, "prompts")}</div>
-    </div>
-    <div class="field">
-      <label><input type="checkbox" id="f_agents" ${d.L04.agents?"checked":""} /> Agents / tool-use / autonome acties</label>
-      <div class="hint">Triggert art. 14 AI Act (HITL) + sandbox-verplichting (I.06).</div>
     </div>`;
 
   if(step===3) return `
@@ -1325,6 +1338,14 @@ function renderStep(step, d){
       <div class="choice-grid">${choiceCards(aucx.L01.invul, d.L01.infra, "infra")}</div>
     </div>`;
 
+  if(step===6) return `
+    <div class="step-num">06<small>— laag L05 · agent & autonomie</small></div>
+    <h2>Wat mag het systeem zelf doen?</h2>
+    <p class="lede">Het autonomieniveau bepaalt de zwaarte van de toetsing: hoe meer de agent zelfstandig mag, hoe meer normen gelden.</p>
+    <div class="field"><label>Autonomieniveau *</label>
+      <div class="choice-grid">${choiceCards(aucx.L05.invul, d.L05.agent===false ? "none" : d.L05.level, "level")}</div>
+    </div>`;
+
   return "";
 }
 
@@ -1358,6 +1379,8 @@ function bindStepEvents(step){
         if(f==="finetune") d.L02.finetune = id;
       } else if(step===5){
         if(f==="infra") d.L01.infra = id;
+      } else if(step===6){
+        d.L05 = id==="none" ? { agent:false } : { agent:true, level:id };
       }
       renderWizard();
     });
@@ -1370,11 +1393,6 @@ function bindStepEvents(step){
     });
     const cls = document.getElementById("f_aiclass");
     if(cls) cls.addEventListener("change",()=>{ d.aiActClass = cls.value; });
-  }
-  // Step 2 agents checkbox
-  if(step===2){
-    const a = document.getElementById("f_agents");
-    if(a) a.addEventListener("change",()=>{ d.L04.agents = a.checked; });
   }
   // Step 3 confidential checkbox
   if(step===3){
@@ -1389,12 +1407,13 @@ function stepValid(step, d){
   if(step===3) return !!(d.L03.scope && d.L03.pg);
   if(step===4) return !!(d.L02.model && d.L02.finetune);
   if(step===5) return !!d.L01.infra;
+  if(step===6) return d.L05.agent===false || (d.L05.agent===true && SCHEMA.L05lvl.includes(d.L05.level));
   return false;
 }
 
 function wizardNext(){
   if(!stepValid(wizardState.step, wizardState.draft)) return;
-  if(wizardState.step < 5){
+  if(wizardState.step < WIZARD_STEPS.length){
     wizardState.step++;
     renderWizard();
     return;
@@ -1402,6 +1421,7 @@ function wizardNext(){
   // finish
   const d = wizardState.draft;
   const isNew = !wizardState.editId;
+  d.L04.agents = d.L05.agent;
   d.modified = nowIso();
   if(isNew){
     d.history = [];
