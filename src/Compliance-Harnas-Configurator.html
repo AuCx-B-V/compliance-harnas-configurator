@@ -1144,8 +1144,21 @@ function slug(s){ return (s||"config").toLowerCase().replace(/[^a-z0-9]+/g,"-").
 /* ============================================================
    ENGINE — generateHarnas(config) → {controls, triggers, risk}
    ============================================================ */
+/* Proportionaliteit (Normenkader Agent-inzet): agent die PG verwerkt wordt één niveau zwaarder getoetst; A4 blijft A4 */
+function l05Effective(cfg){
+  if(!(cfg.L05?.agent===true && cfg.L05.level)) return null;
+  const order = SCHEMA.L05lvl, i = order.indexOf(cfg.L05.level);
+  const pg = !!cfg.L03?.pg && cfg.L03.pg !== "pg_none";
+  const eff = pg ? order[Math.min(i+1, order.length-1)] : cfg.L05.level;
+  return { level: cfg.L05.level, eff, bumped: eff !== cfg.L05.level };
+}
+
 function l05Label(cfg){
-  if(cfg.L05?.agent===true && cfg.L05.level) return aucx.L05.invul.find(x=>x.id===cfg.L05.level)?.name || cfg.L05.level;
+  const e = l05Effective(cfg);
+  if(e){
+    const name = aucx.L05.invul.find(x=>x.id===e.level)?.name || e.level;
+    return e.bumped ? `${name} (toetsing als ${e.eff}: PG)` : name;
+  }
   if(cfg.L04?.agents===true) return "agents · niveau ontbreekt";
   return "geen agent";
 }
@@ -1198,7 +1211,11 @@ function generateHarnas(cfg){
 
   // L05 Agent & Autonomie
   const l05 = cfg.L05 ? aucx.L05.invul.find(x=>x.id===(cfg.L05.agent===false ? "none" : cfg.L05.level)) : null;
-  if(l05) add(l05.ctrl, `L05 · ${l05.name}`);
+  const l05e = l05Effective(cfg);
+  if(l05e && l05e.bumped){
+    const effInv = aucx.L05.invul.find(x=>x.id===l05e.eff);
+    add(effInv.ctrl, `L05 · ${l05.name} → toetsing als ${l05e.eff} (PG)`);
+  } else if(l05) add(l05.ctrl, `L05 · ${l05.name}`);
 
   // AI Act triggers
   const activeTriggers = aiActTriggers.filter(t => {
