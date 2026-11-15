@@ -28,6 +28,7 @@ Als geen van deze bestaat: stop en geef terug:
 Het JSON-bestand bevat:
 - `name`, `owner`, `dpo`, `ciso`, `purpose`, `aiActClass`
 - `L01-L04` keuzes
+- `L05` (Agent & Autonomie): `agent` (true/false) en bij `agent: true` een `level` (`A1`-`A4`). Ontbreekt in configs van vóór L05.
 - `controlStatus` — object met per harnas-code: `{status, owner, date, evidence, note}`
   - status-waarden: `open` · `prog` (in uitvoering) · `done` (geïmplementeerd) · `na` (n.v.t.) · `risk` (geaccepteerd risico)
 
@@ -41,6 +42,26 @@ Gebruik deze tier-mapping (gelijk aan `harnasSteering` in de configurator):
 | **medium** | D.03, D.06, M.04, I.02, I.03, I.06, T.02, A.01, A.02 | afgedwongen via hook in settings.json |
 | **hard** | D.04, I.01, I.04, I.05, O.05, O.06 | infra/contractueel — buiten Claude |
 | **org** | overige | puur audit-dossier — geen runtime |
+
+De agent-normen `X.01`-`X.30` hebben geen tier. Deel ze niet in bij `org` en neem ze niet op in de blokken hierboven; ze krijgen een eigen blok (stap 3b).
+
+### 3b. Agent-normen (L05)
+
+Alleen als `L05.agent` true is en `L05.level` gezet. Bepaal eerst het toetsingsniveau: verwerkt de use-case persoonsgegevens (`L03.pg` bestaat en is niet `pg_none`), dan geldt één niveau hoger dan gekozen (A1 → A2, A2 → A3, A3 → A4; A4 blijft A4). Dit is gelijk aan `l05Effective` in de configurator.
+
+Actieve normen per toetsingsniveau:
+
+| Niveau | Actieve normen |
+|---|---|
+| **A1** | X.01-X.06, X.13-X.15, X.28-X.30 (12) |
+| **A2** | X.01-X.18, X.28-X.30 (21) |
+| **A3 / A4** | X.01-X.30 (30) |
+
+Een actieve norm zonder regel in `controlStatus` heeft status `open`.
+
+Andere gevallen:
+- `L05.agent` is false: meld "geen agent" en sla het blok over.
+- `L05` ontbreekt of heeft geen `level`, terwijl `L04.agents` true is: meld dat het autonomieniveau ontbreekt en dat de agent-normen daardoor niet geactiveerd zijn (wizard, stap 6).
 
 ### 4. Geef een gestructureerd rapport
 
@@ -71,6 +92,11 @@ Gebruik dit format (Nederlands, kort):
 - I.01 Authenticatie — verifieer dat YubiKey-MFA op Anthropic-account aan staat
 - I.05 Netwerksegmentatie — egress-whitelist actief?
 - ...
+
+### Agent-normen (L05) — {gekozen niveau}, getoetst als {toetsingsniveau}
+{aantal} actief · {aantal} geïmplementeerd · {aantal} in uitvoering · {aantal} open · {aantal} n.v.t./risico
+- Open: X.07 Eigen agent-identiteit, X.10 Toolallowlist, ...
+Telt niet mee in het oordeel hieronder: de agent-normen hebben nog geen tier.
 ```
 
 ### 5. Geef ten slotte een **GO / WAIT / STOP**-oordeel
